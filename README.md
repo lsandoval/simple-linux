@@ -1,2 +1,2 @@
 # simple-linux
-Simple Linux program
+Simple Linux/x86 program
