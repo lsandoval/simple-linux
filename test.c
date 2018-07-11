@@ -1,4 +1,5 @@
 #include <unistd.h>
+#include <link.h>
 #include <syscall.h>
 
 #define STRING_COMMA_LEN(STR) (STR), (sizeof (STR) - 1)
@@ -15,16 +16,33 @@ length (const char *s)
 int
 main (int argc, char **argv)
 {
-  int i;
-  int fd = STDOUT_FILENO;
+  char **ev = &argv[argc + 1];
+  char **evp = ev;
 
-  for (i = 0; i < argc; i++)
-    {
-      syscall (SYS_write, fd, argv [i], length (argv [i]));
-      syscall (SYS_write, fd, STRING_COMMA_LEN (" "));
-    }
-  syscall (SYS_write, fd, STRING_COMMA_LEN ("\n"));
+  while (*evp++ != NULL)
+    ;
 
-  syscall (SYS_exit, 0);
+  ElfW(auxv_t) *av = (ElfW(auxv_t) *) evp;
+  const ElfW(Phdr) *phdr = NULL;
+  size_t phnum = 0;
+
+  for (; av->a_type != AT_NULL; ++av)
+    switch (av->a_type)
+      {
+      case AT_PHDR:
+	phdr = (const void *) av->a_un.a_val;
+	break;
+      case AT_PHNUM:
+	phnum = av->a_un.a_val;
+	break;
+      }
+
+  size_t i;
+  size_t loadnum = 0;
+  for (i = 0; i < phnum; i++, phdr++)
+    if (phdr->p_type == PT_LOAD)
+      loadnum++;
+
+  syscall (SYS_exit, !loadnum);
   return 0;
 }

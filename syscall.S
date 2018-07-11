@@ -3,7 +3,6 @@
 	.globl syscall
 	.p2align 4
 syscall:
-	.cfi_startproc
 #ifdef __x86_64__
 	movq %rdi, %rax		/* Syscall number -> rax.  */
 	movq %rsi, %rdi		/* shift arg1 - arg5.  */
@@ -32,6 +31,4 @@ syscall:
 	pop %ebp
 #endif
 	ret			/* Return to caller.  */
-	.cfi_endproc
 	.size syscall, .-syscall
-
