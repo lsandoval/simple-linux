@@ -18,13 +18,9 @@ main (int argc, char **argv)
   int i;
   int fd = STDOUT_FILENO;
 
-  for (i = 0; i < argc; i++)
-    {
-      syscall (SYS_write, fd, argv [i], length (argv [i]));
-      syscall (SYS_write, fd, STRING_COMMA_LEN (" "));
-    }
-  syscall (SYS_write, fd, STRING_COMMA_LEN ("\n"));
-
+  syscall (SYS_write, fd, STRING_COMMA_LEN ("a\n"));
+  i = 7 / 0;
+  syscall (SYS_write, fd, STRING_COMMA_LEN ("b\n"));
   syscall (SYS_exit, 0);
   return 0;
 }
