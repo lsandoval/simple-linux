@@ -1,4 +1,12 @@
 CC=gcc
+ifdef X32
+CC+=-mx32
+LDFLAGS+=-m elf32_x86_64
+endif
+ifdef IA32
+CC+=-m32
+LDFLAGS+=-m elf_i386
+endif
 CFLAGS=-g -O0 -fno-asynchronous-unwind-tables
 ASFLAGS=-g
 LD=ld
